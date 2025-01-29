@@ -2,15 +2,12 @@
 const uploadButton = document.getElementById('uploadButton');
 const uploadModal = document.getElementById('uploadModal');
 const closeModal = document.getElementById('closeModal');
-const submitScan = document.getElementById('submitScan');
+const submitPrescription = document.getElementById('submitPrescription');
+const doctorInput = document.getElementById('doctor');
 const dateInput = document.getElementById('date');
 const descriptionInput = document.getElementById('description');
 const fileInput = document.getElementById('fileInput');
-const gallery = document.getElementById('gallery');
-
-// Full-Screen Modal Elements
-const fullScreenModal = document.getElementById('fullScreenModal');
-const fullScreenImage = document.getElementById('fullScreenImage');
+const prescriptionGallery = document.getElementById('prescriptionGallery');
 
 // Open the upload modal
 uploadButton.addEventListener('click', () => {
@@ -22,58 +19,48 @@ closeModal.addEventListener('click', () => {
     uploadModal.style.display = 'none';
 });
 
-// Submit scan details
-submitScan.addEventListener('click', () => {
+// Submit prescription details
+submitPrescription.addEventListener('click', () => {
+    const doctor = doctorInput.value.trim();
     const date = dateInput.value;
-    const description = descriptionInput.value;
+    const description = descriptionInput.value.trim();
     const file = fileInput.files[0];
 
-    if (date && description && file) {
+    if (doctor && date && description && file) {
         const reader = new FileReader();
         reader.onload = function(event) {
-            // Create gallery item
-            const galleryItem = document.createElement('div');
-            galleryItem.classList.add('gallery-item');
-            
+            // Create prescription item
+            const prescriptionItem = document.createElement('div');
+            prescriptionItem.classList.add('prescription-item');
+
             // Image element
             const img = document.createElement('img');
             img.src = event.target.result;
-            galleryItem.appendChild(img);
-            
-            // Date element
-            const dateElement = document.createElement('div');
-            dateElement.classList.add('date');
-            dateElement.textContent = date;
-            galleryItem.appendChild(dateElement);
-            
-            // Description element
-            const descriptionElement = document.createElement('div');
-            descriptionElement.classList.add('description');
-            descriptionElement.textContent = description;
-            galleryItem.appendChild(descriptionElement);
-            
-            // Add the gallery item to the top of the gallery
-            gallery.insertBefore(galleryItem, gallery.firstChild);
+            img.alt = "Prescription Image";
+            prescriptionItem.appendChild(img);
 
-            // Click event to open image in full-screen modal
-            img.addEventListener('click', () => {
-                fullScreenModal.style.display = 'flex';
-                fullScreenImage.src = event.target.result;
-            });
+            // Details
+            const details = document.createElement('div');
+            details.classList.add('details');
+            details.innerHTML = `
+                <strong>Doctor:</strong> ${doctor} <br>
+                <strong>Date:</strong> ${date} <br>
+                <strong>Notes:</strong> ${description}
+            `;
+            prescriptionItem.appendChild(details);
 
-            // Close full-screen modal when clicked
-            fullScreenModal.addEventListener('click', () => {
-                fullScreenModal.style.display = 'none';
-            });
+            // Add to gallery
+            prescriptionGallery.insertBefore(prescriptionItem, prescriptionGallery.firstChild);
 
-            // Close the upload modal and reset fields
-            uploadModal.style.display = 'none';
+            // Reset and close modal
+            doctorInput.value = '';
             dateInput.value = '';
             descriptionInput.value = '';
             fileInput.value = '';
+            uploadModal.style.display = 'none';
         };
         reader.readAsDataURL(file);
     } else {
-        alert('Please fill in all the fields!');
+        alert('Please fill in all fields!');
     }
 });
